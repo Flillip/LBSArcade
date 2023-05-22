@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33122.133
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LBSArcade", "LBSArcade\LBSArcade.csproj", "{FED06A4A-02F9-46AA-9886-18BAC938DAA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSHelper", "OSHelper\OSHelper.csproj", "{A9B3DC48-E631-4EAE-B183-8FCDD7041AA2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NvgSharp.MonoGame", "NvgSharp\XNA\NvgSharp.MonoGame.csproj", "{853768DC-1D82-49E7-ADF7-8E893A35A154}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerTester", "ControllerTester\ControllerTester.csproj", "{52C4904B-49D0-4446-802D-2A67781A9CDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FED06A4A-02F9-46AA-9886-18BAC938DAA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED06A4A-02F9-46AA-9886-18BAC938DAA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FED06A4A-02F9-46AA-9886-18BAC938DAA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FED06A4A-02F9-46AA-9886-18BAC938DAA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9B3DC48-E631-4EAE-B183-8FCDD7041AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9B3DC48-E631-4EAE-B183-8FCDD7041AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9B3DC48-E631-4EAE-B183-8FCDD7041AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9B3DC48-E631-4EAE-B183-8FCDD7041AA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{853768DC-1D82-49E7-ADF7-8E893A35A154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{853768DC-1D82-49E7-ADF7-8E893A35A154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{853768DC-1D82-49E7-ADF7-8E893A35A154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{853768DC-1D82-49E7-ADF7-8E893A35A154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52C4904B-49D0-4446-802D-2A67781A9CDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52C4904B-49D0-4446-802D-2A67781A9CDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52C4904B-49D0-4446-802D-2A67781A9CDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52C4904B-49D0-4446-802D-2A67781A9CDE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E5545E2E-89CD-4420-8B5F-7CBB4E5E2C23}
+	EndGlobalSection
+EndGlobal
