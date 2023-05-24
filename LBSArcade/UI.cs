@@ -1,11 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace LBSArcade
 {
@@ -36,6 +37,8 @@ namespace LBSArcade
         private float borderFadeSpeed;
         private float focusedGameScale;
         private string gamesDirectory;
+        private string gamesDirectoryDriveLetter;
+        private string fallbackGamesDirectory;
         private int gamesPointer, moveDir;
         private bool shouldMovePointer, shouldMove;
         private bool gameJustCorrupted;
@@ -69,6 +72,8 @@ namespace LBSArcade
 
             this.focusedGameScale = Settings.GetData<float>(nameof(this.focusedGameScale));
             this.gamesDirectory = Settings.GetData<string>(nameof(this.gamesDirectory));
+            this.gamesDirectoryDriveLetter = Settings.GetData<string>(nameof(this.gamesDirectoryDriveLetter));
+            this.fallbackGamesDirectory = Settings.GetData<string>(nameof(this.fallbackGamesDirectory));
             GameContainer.GamesDirectory = this.gamesDirectory;
             this.spacing = Settings.GetData<float>(nameof(this.spacing));
             this.imageSize = Settings.GetVector2(nameof(this.imageSize)) * this.focusedGameScale;
@@ -123,15 +128,60 @@ namespace LBSArcade
                                                                                 waveBackground, 500f, new(0, -400));
 
             GameContainer.ImageSize = this.imageSize;
+
             CreateGameContainers();
+
+            DriveWatcher.Init();
+            DriveWatcher.DriveConnected += this.DriveConnected;
+            DriveWatcher.DriveDisconnected += this.DriveDisconnected;
+            DriveWatcher.StartWatching();
+        }
+
+        private void DriveConnected(object sender, EventArrivedEventArgs e)
+        {
+            if (!OperatingSystem.IsWindows()) return;
+
+            char driveLetter = e.NewEvent.Properties["DriveName"].Value.ToString()[0];
+            Logger.Log("Drive was connected " + driveLetter);
+            string tempGameDirectory = driveLetter + ":" + this.gamesDirectory;
+            if (Directory.Exists(tempGameDirectory))
+            {
+                this.gamesDirectoryDriveLetter = driveLetter.ToString();
+                this.gamesPointer = 0;
+                CreateGameContainers(true);
+            }
+        }
+
+        private void DriveDisconnected(object sender, EventArrivedEventArgs e)
+        {
+            if (!OperatingSystem.IsWindows()) return;
+            Logger.Log("Drive was disconnected " + e.NewEvent.Properties["DriveName"].Value.ToString());
+
+            char driveLetter = e.NewEvent.Properties["DriveName"].Value.ToString()[0];
+
+            if (driveLetter.ToString() == this.gamesDirectoryDriveLetter)
+            {
+                this.gamesPointer = 0;
+                CreateGameContainers(true);
+            }
         }
 
         /// <summary>
         /// Parses the game folder and creates GameContainers.
         /// </summary>
-        private void CreateGameContainers()
+        private void CreateGameContainers(bool clearCorrupt = false)
         {
-            this.games = ParseImageFolder(out bool _);
+            if (clearCorrupt)
+                this.corruptGames = new List<string>();
+
+            string tempGameDirectory = this.gamesDirectoryDriveLetter + ":" + this.gamesDirectory;
+            string gameDirectory;
+            if (Directory.Exists(tempGameDirectory))
+                gameDirectory = tempGameDirectory;
+            else
+                gameDirectory = this.fallbackGamesDirectory;
+
+            this.games = ParseImageFolder(gameDirectory, out bool _);
 
             if (this.games.Length == 0)
                 return;
@@ -393,15 +443,15 @@ namespace LBSArcade
             return copy;
         }
 
-        private GameContainer[] ParseImageFolder(out bool error)
+        private GameContainer[] ParseImageFolder(string gamesDirectory, out bool error)
         {
             try
             {
-                if (!Directory.Exists(this.gamesDirectory))
-                    throw new DirectoryNotFoundException(this.gamesDirectory);
+                if (!Directory.Exists(gamesDirectory))
+                    throw new DirectoryNotFoundException(gamesDirectory);
 
-                string[] files = Directory.GetDirectories(this.gamesDirectory)
-                                    .Select(name => name.Replace(this.gamesDirectory, ""))
+                string[] files = Directory.GetDirectories(gamesDirectory)
+                                    .Select(name => name.Replace(gamesDirectory, ""))
                                     .ToArray();
 
                 error = false;
