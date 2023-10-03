@@ -7,6 +7,7 @@ using System.Linq;
 using System.Management;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace LBSArcade
 {
@@ -28,6 +29,7 @@ namespace LBSArcade
         private Vector2 borderOffset;
         private Vector2 corruptedBackdropSize;
         private Vector2 noGamesTextOffset;
+        private Texture2D sebbe;
         private float spacing, distanceBetweenGames;
         private float gameAnimationTimeElapsed;
         private float gameAnimationLerpDuration;
@@ -44,6 +46,8 @@ namespace LBSArcade
         private bool gameJustCorrupted;
         private float justCorruptedTimer;
         private float justCorruptedTimerMax;
+        private float sebbeTimer;
+        private float delta;
 
 
         public static readonly Keys KeyLeft = Keys.Left;
@@ -78,7 +82,7 @@ namespace LBSArcade
             this.justCorruptedTimerMax = Settings.GetData<float>(nameof(this.justCorruptedTimerMax));
             this.noGamesTextOffset = Settings.GetVector2(nameof(this.noGamesTextOffset));
 
-            GameContainer.ImageSize = Settings.GetData<Vector2>(nameof(GameContainer.ImageSize));
+            GameContainer.ImageSize = Settings.GetVector2(nameof(GameContainer.ImageSize) + "2");
             GameContainer.NameLength = Settings.GetData<int>(nameof(GameContainer.NameLength));
             GameContainer.BigLength = Settings.GetData<int>(nameof(GameContainer.BigLength));
             GameContainer.BigXOffset = Settings.GetData<int>(nameof(GameContainer.BigXOffset));
@@ -88,6 +92,8 @@ namespace LBSArcade
 
         public void LoadUI()
         {
+            this.sebbe = Game.Instance.Content.Load<Texture2D>("Sebbe");
+
             // load fonts
             this.smallFont = Game.Instance.Content.Load<SpriteFont>("SmallFont");
             this.largeFont = Game.Instance.Content.Load<SpriteFont>("LargeFont");
@@ -221,6 +227,7 @@ namespace LBSArcade
 
         public void Update(float delta, bool lockCursor)
         {
+            this.delta = delta;
             this.background.Update(delta);
 
             if (this.games.Length == 0 || GameContainer.GameRunning || lockCursor)
@@ -364,6 +371,8 @@ namespace LBSArcade
 
             if (this.konami.Success)
                 DrawKonami(spriteBatch);
+            else
+                this.sebbeTimer = 0;
 
             if (gameJustCorrupted)
                 DrawCorrupted(spriteBatch);
@@ -404,17 +413,37 @@ namespace LBSArcade
                             Color.Black
                             );
         }
+        private float Lerp(float a, float b, float t)
+        {
+            return a + (b - a) * t;
+        }
+
+        public float EaseOutLerp(float t)
+        {
+            // Apply an easing-out function here
+            // You can adjust the easing curve by modifying this function
+            return 1f - MathF.Pow(1f - t, 4);
+        }
+
+        public float LerpWithEasing(float start, float end, float t)
+        {
+            // Ensure t is clamped between 0 and 1
+            t = Math.Min(Math.Max(t, 0), 1);
+
+            // Apply the custom easing-out function to 't'
+            float easedT = EaseOutLerp(t);
+
+            // Perform the linear interpolation
+            return Lerp(start, end, easedT);
+        }
 
         private void DrawKonami(SpriteBatch spriteBatch)
         {
-            string text = "KONAMI CODE";
-            Vector2 size = this.largeFont.MeasureString(text);
+            float scale = LerpWithEasing(0f, 1f, (this.sebbeTimer += delta * 1000) / (float)konami.SleepAmount);
 
-            spriteBatch.DrawString(this.largeFont,
-                            text,
-                            (Game.ScreenSize / 2f) - (size / 2f) - noGamesTextOffset,
-                            Color.Black
-                            );
+            Vector2 size = new Vector2(this.sebbe.Width, this.sebbe.Height);
+            Vector2 pos = (Game.ScreenSize / 2f);
+            spriteBatch.Draw(this.sebbe, pos, null, Color.White, 0f, (size / 2f), scale, SpriteEffects.None, 0f);
         }
 
         private void DrawCorrupted(SpriteBatch spriteBatch)

@@ -56,11 +56,11 @@ namespace LBSArcade
 
         private float timer = 0f;
         private int index = 0;
-        private int sleepAmount;
+        public readonly int SleepAmount;
 
         public Konami()
         {
-            this.sleepAmount = Settings.GetData<int>("konamiTimer");
+            this.SleepAmount = Settings.GetData<int>("konamiTimer");
         }
 
         private bool CheckJoyStick(JoystickKeys key)
@@ -90,12 +90,15 @@ namespace LBSArcade
         {
             Keys[] keysPressed = Keyboard.AnyKeyDown();
 
-            if (Keyboard.GetKeyDown(keys[index]) || CheckJoyStick(joyKeys[index]))
+            bool temp = Keyboard.GetKeyDown(keys[index]);
+            bool temp2 = this.CheckJoyStick(this.joyKeys[this.index]);
+            if (temp || temp2)
             {
                 int[] axes = Joystick.GetState(0).Axes;
                 Logger.Debug(joyKeys[index]);
 
                 index++;
+                Logger.Debug(index);
 
                 if (index == keys.Length)
                 {
@@ -106,7 +109,7 @@ namespace LBSArcade
 
                     new Thread(() =>
                     {
-                        Thread.Sleep(this.sleepAmount);
+                        Thread.Sleep(this.SleepAmount);
                         this.Success = false;
                     }).Start();
                 }
