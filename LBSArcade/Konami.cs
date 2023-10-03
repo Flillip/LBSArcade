@@ -123,7 +123,7 @@ namespace LBSArcade
                 timer = 0;
                 index = 0;
 
-                Logger.Debug("Wrong keys pressed");
+                //Logger.Debug("Wrong keys pressed");
             }
 
             if (timer > 0)

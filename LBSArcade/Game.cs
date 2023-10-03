@@ -79,7 +79,7 @@ namespace LBSArcade
             ArcadeController.Player2.Update();
             Keyboard.GetState();
 
-            if (/*GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||*/ Keyboard.GetKeyDown(Keys.Escape))
+            if (Keyboard.GetKeyDown(Keys.Escape))
             {
 #if RELEASE
                 using FileStream file = File.Create("close");

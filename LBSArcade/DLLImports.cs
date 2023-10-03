@@ -19,6 +19,9 @@ namespace LBSArcade
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         internal static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
 
+        [DllImport("user32.dll")]
+        internal static extern short GetAsyncKeyState(int vKey);
+
         internal static void SetWindowFocus(Process process, bool retry = false, nCmdShow nCmdShow = nCmdShow.SW_SHOWMAXIMIZED)
         {
             IntPtr hWnd = process.MainWindowHandle;

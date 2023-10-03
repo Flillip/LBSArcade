@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -20,6 +21,8 @@ namespace LBSArcade
         public static int BigXOffset = 50;
         public static int BigYOffset = 64;
         public static bool GameRunning = false;
+        public static int CloseKey = 0x41; // default: enter
+
 
         public string name { get; private set; }
 
@@ -222,9 +225,16 @@ namespace LBSArcade
             while (this.game.HasExited == false)
             {
                 this.gameOpenedTime = (uint)(DateTime.Now - startTime).Seconds;
-                Thread.Sleep(100);
-                if (!DLLImports.IsWindowFocused(this.game))
-                    DLLImports.SetWindowFocus(this.game);
+
+                
+                if (DLLImports.GetAsyncKeyState(CloseKey) < 0 || ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuSelect))
+                {
+                    this.game.Kill(true);
+                    break;
+                }
+
+                //if (!DLLImports.IsWindowFocused(this.game))
+                    //DLLImports.SetWindowFocus(this.game);
             }
             Game.Instance.RestartIntro();
 
@@ -233,6 +243,7 @@ namespace LBSArcade
 
             DLLImports.SetWindowFocus(Process.GetCurrentProcess());
             GameRunning = false;
+
 
             this.game.Dispose();
         }

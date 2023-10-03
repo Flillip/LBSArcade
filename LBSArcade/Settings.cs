@@ -46,7 +46,13 @@ namespace LBSArcade
             {"konamiTimer", "5000" },
             {"transitionAnimationLength", "3" },
             {"introBackgroundColor", "28,28,28" },
-            {"screenSize", "1920,1080" }
+            {"screenSize", "1920,1080" },
+            {"imageSize", "300,400"},
+            {"nameLength", "19"},
+            {"bigLength", "50"},
+            {"bigXOffset", "50"},
+            {"bigYOffset", "64"},
+            {"closeKey", "65" }
         };
 
         private static void VerifyConfigFile()
@@ -64,6 +70,8 @@ namespace LBSArcade
                 VerifyConfigFile();
                 data ??= parser.ReadFile(configPath);
 
+                specificName = char.ToLower(specificName[0]) + specificName[1..];
+
                 data["settings"][specificName] = uiDefaultSettings[specificName];
                 parser.WriteFile(configPath, data);
                 return;
@@ -77,6 +85,7 @@ namespace LBSArcade
 
         public static Color GetColor(string name)
         {
+            name = char.ToLower(name[0]) + name[1..];
             float[] rgb = GetData<float[]>(name);
             int r = (int)rgb[0];
             int g = (int)rgb[1];
@@ -86,6 +95,7 @@ namespace LBSArcade
 
         public static Vector2 GetVector2(string name)
         {
+            name = char.ToLower(name[0]) + name[1..];
             float[] vec = GetData<float[]>(name);
             return new(vec[0], vec[1]);
         }
@@ -96,6 +106,7 @@ namespace LBSArcade
                 VerifyConfigFile();
                 data ??= parser.ReadFile(configPath);
 
+                name = char.ToLower(name[0]) + name[1..];
                 string value = data["settings"][name];
 
                 if (value == null)

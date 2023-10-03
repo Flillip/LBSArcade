@@ -45,17 +45,11 @@ namespace LBSArcade
         private float justCorruptedTimer;
         private float justCorruptedTimerMax;
 
-#if DEBUG
-        private readonly Keys Left = Keys.Left;
-        private readonly Keys Right = Keys.Right;
-        private readonly Keys Select = Keys.Enter;
-#endif
 
-#if RELEASE
-        private readonly Keys Left = Keys.D1;
-        private readonly Keys Right = Keys.D3;
-        private readonly Keys Select = Keys.D2;
-#endif
+        public static readonly Keys KeyLeft = Keys.Left;
+        public static readonly Keys KeyRight = Keys.Right;
+        public static readonly Keys KeySelect = Keys.Enter;
+
 
         public UI()
         {
@@ -83,6 +77,13 @@ namespace LBSArcade
             this.selectedGamePosition = Settings.GetVector2(nameof(this.selectedGamePosition));
             this.justCorruptedTimerMax = Settings.GetData<float>(nameof(this.justCorruptedTimerMax));
             this.noGamesTextOffset = Settings.GetVector2(nameof(this.noGamesTextOffset));
+
+            GameContainer.ImageSize = Settings.GetData<Vector2>(nameof(GameContainer.ImageSize));
+            GameContainer.NameLength = Settings.GetData<int>(nameof(GameContainer.NameLength));
+            GameContainer.BigLength = Settings.GetData<int>(nameof(GameContainer.BigLength));
+            GameContainer.BigXOffset = Settings.GetData<int>(nameof(GameContainer.BigXOffset));
+            GameContainer.BigYOffset = Settings.GetData<int>(nameof(GameContainer.BigYOffset));
+            GameContainer.CloseKey = Settings.GetData<int>(nameof(GameContainer.CloseKey));
         }
 
         public void LoadUI()
@@ -139,6 +140,7 @@ namespace LBSArcade
 
         private void DriveConnected(object sender, EventArrivedEventArgs e)
         {
+
             if (!OperatingSystem.IsWindows()) return;
 
             char driveLetter = e.NewEvent.Properties["DriveName"].Value.ToString()[0];
@@ -169,10 +171,14 @@ namespace LBSArcade
         /// <summary>
         /// Parses the game folder and creates GameContainers.
         /// </summary>
-        private void CreateGameContainers(bool clearCorrupt = false)
+        private void CreateGameContainers(bool clearCorrupt = false, bool regen = false)
         {
             if (clearCorrupt)
                 this.corruptGames = new List<string>();
+
+            GameContainer[] prev = new GameContainer[0];
+            if (regen)
+                prev = CopyGameContainerArray(this.games);
 
             string tempGameDirectory = this.gamesDirectoryDriveLetter + ":" + this.gamesDirectory;
             string gameDirectory;
@@ -193,8 +199,17 @@ namespace LBSArcade
 
             for (int i = 0; i < this.games.Length; i++)
             {
-                this.games[i].SetPosition(new(i * (height * scale) * spacing + padding, yPos));
-                this.games[i].SetScale(scale / this.focusedGameScale);
+                if (!regen)
+                {
+                    this.games[i].SetPosition(new(i * (height * scale) * spacing + padding, yPos));
+                    this.games[i].SetScale(scale / this.focusedGameScale);
+                }
+
+                else
+                {
+                    this.games[i].SetPosition(prev[i].GetPosition());
+                    this.games[i].SetScale(prev[i].GetScale());
+                }
             }
 
             this.pointerPos = this.games[this.gamesPointer].GetPosition();
@@ -219,13 +234,13 @@ namespace LBSArcade
             if (!this.shouldMove && !this.shouldMovePointer)
             {
 
-                if ((ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuLeft) || Keyboard.GetKeyDown(this.Left)) && this.gamesPointer > 0)
+                if ((ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuLeft)) && this.gamesPointer > 0)
                     MovePointer(-1);
 
-                else if ((ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuRight) || Keyboard.GetKeyDown(this.Right)) && this.gamesPointer < this.games.Length - 1)
+                else if ((ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuRight)) && this.gamesPointer < this.games.Length - 1)
                     MovePointer(1);
 
-                else if (ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuSelect) || Keyboard.GetKeyDown(this.Select))
+                else if (ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuSelect))
                     // Off load this to a new Task as to not block UI
                     new Task(StartGame).Start();
 
@@ -327,7 +342,7 @@ namespace LBSArcade
             {
                 Logger.Error("Error starting " + game.name);
                 this.corruptGames.Add(game.name);
-                CreateGameContainers(); // Recreate them since it crashed
+                CreateGameContainers(regen: true); // Recreate them since it crashed
                 this.gameJustCorrupted = true;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LBSArcade
 {
@@ -29,7 +30,8 @@ namespace LBSArcade
             Keys[] current = CurrentKeyState.GetPressedKeys();
             Keys[] prev = PreviousKeyState.GetPressedKeys();
 
-            int length = current.Length + prev.Length;
+            return current.Union(prev).ToArray();
+            /*int length = current.Length + prev.Length;
 
             List<Keys> distinct = new List<Keys>();
 
@@ -50,7 +52,8 @@ namespace LBSArcade
                     distinct.Add(current[i]);
             }
 
-            return distinct.ToArray();
+            return distinct.ToArray();*/
+
         }
     }
 }

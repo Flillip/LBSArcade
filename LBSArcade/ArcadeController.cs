@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Runtime.InteropServices;
 
 namespace LBSArcade
 {
@@ -16,6 +17,7 @@ namespace LBSArcade
         private bool calibrating;
         private JoystickState oldState;
         private JoystickState newState;
+        private bool updateKeyboard = false;
 
         public ArcadeController(int playerIndex)
         {
@@ -25,8 +27,13 @@ namespace LBSArcade
             this.calibrating = false;
         }
 
+        public void ShouldUpdateKeyboard(bool value) => this.updateKeyboard = value;
+
         public void Update()
         {
+            if (this.updateKeyboard)
+                Keyboard.GetState();
+
             if (this.joystickConnected)
                 this.oldState = this.newState;
 
@@ -44,7 +51,7 @@ namespace LBSArcade
         public bool JustPressedDown(int button)
         {
             if (!this.joystickConnected)
-                return false;
+                return GetJustPressedKeyboard((ArcadeButton)button);
 
             Calibrate();
 
@@ -57,10 +64,46 @@ namespace LBSArcade
             return JustPressedDown((int)button);
         }
 
+        private bool GetJustPressedKeyboard(ArcadeButton button)
+        {
+            return button switch
+            {
+                ArcadeButton.Green  => this == Player1 ? Keyboard.GetKeyDown(Keys.R) : Keyboard.GetKeyDown(Keys.U),
+                ArcadeButton.Yellow => this == Player1 ? Keyboard.GetKeyDown(Keys.F) : Keyboard.GetKeyDown(Keys.J),
+                ArcadeButton.Blue   => this == Player1 ? Keyboard.GetKeyDown(Keys.T) : Keyboard.GetKeyDown(Keys.I),
+                ArcadeButton.Red    => this == Player1 ? Keyboard.GetKeyDown(Keys.G) : Keyboard.GetKeyDown(Keys.K),
+                ArcadeButton.Top    => this == Player1 ? Keyboard.GetKeyDown(Keys.Y) : Keyboard.GetKeyDown(Keys.O),
+                ArcadeButton.Bottom => this == Player1 ? Keyboard.GetKeyDown(Keys.H) : Keyboard.GetKeyDown(Keys.L),
+
+                ArcadeButton.MenuLeft   => this == Player1 && Keyboard.GetKeyDown(Keys.Left), // if this is not false
+                ArcadeButton.MenuSelect => this == Player1 && Keyboard.GetKeyDown(Keys.Enter), // it may cause an error
+                ArcadeButton.MenuRight  => this == Player1 && Keyboard.GetKeyDown(Keys.Right), // with the calibrate code
+                _ => false
+            };
+        }
+
+        private bool GetPressedKeyboard(ArcadeButton button)
+        {
+            return button switch
+            {
+                ArcadeButton.Green  => this == Player1 ? Keyboard.IsPressed(Keys.R) : Keyboard.IsPressed(Keys.U),
+                ArcadeButton.Yellow => this == Player1 ? Keyboard.IsPressed(Keys.F) : Keyboard.IsPressed(Keys.J),
+                ArcadeButton.Blue   => this == Player1 ? Keyboard.IsPressed(Keys.T) : Keyboard.IsPressed(Keys.I),
+                ArcadeButton.Red    => this == Player1 ? Keyboard.IsPressed(Keys.G) : Keyboard.IsPressed(Keys.K),
+                ArcadeButton.Top    => this == Player1 ? Keyboard.IsPressed(Keys.Y) : Keyboard.IsPressed(Keys.O),
+                ArcadeButton.Bottom => this == Player1 ? Keyboard.IsPressed(Keys.H) : Keyboard.IsPressed(Keys.L),
+
+                ArcadeButton.MenuLeft   => this == Player1 && Keyboard.IsPressed(Keys.Left),
+                ArcadeButton.MenuSelect => this == Player1 && Keyboard.IsPressed(Keys.Enter),
+                ArcadeButton.MenuRight  => this == Player1 && Keyboard.IsPressed(Keys.Right),
+                _ => false
+            };
+        }
+
         public bool GetPressed(int button)
         {
             if (!this.joystickConnected)
-                return false;
+                return GetPressedKeyboard((ArcadeButton)button);
 
             Calibrate();
 
