@@ -18,7 +18,7 @@ namespace LBSArcade
         private static Dictionary<string, string> uiDefaultSettings = new()
         {
             {"focusedGameScale","1.5"},
-            {"gamesDirectory","Games/"},
+            {"gamesDirectory","./Games/"},
             {"gamesDirectoryDriveLetter","F"},
             {"fallbackGamesDirectory","./Games/"},
             {"spacing","0.95"},

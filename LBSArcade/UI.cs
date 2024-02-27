@@ -241,10 +241,10 @@ namespace LBSArcade
             if (!this.shouldMove && !this.shouldMovePointer)
             {
 
-                if ((ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuLeft)) && this.gamesPointer > 0)
+                if ((ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuLeft) || ArcadeController.Player1.GetJoystickJustPressed().X == -1) && this.gamesPointer > 0)
                     MovePointer(-1);
 
-                else if ((ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuRight)) && this.gamesPointer < this.games.Length - 1)
+                else if ((ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuRight) || ArcadeController.Player1.GetJoystickJustPressed().X == 1) && this.gamesPointer < this.games.Length - 1)
                     MovePointer(1);
 
                 else if (ArcadeController.Player1.JustPressedDown(ArcadeButton.MenuSelect))
@@ -439,10 +439,12 @@ namespace LBSArcade
 
         private void DrawKonami(SpriteBatch spriteBatch)
         {
-            float scale = LerpWithEasing(0f, 1f, (this.sebbeTimer += delta * 1000) / (float)konami.SleepAmount);
+            float scale = LerpWithEasing(0f, 4f, (this.sebbeTimer += delta * 1000) / (float)konami.SleepAmount);
 
             Vector2 size = new Vector2(this.sebbe.Width, this.sebbe.Height);
             Vector2 pos = (Game.ScreenSize / 2f);
+            pos.Y += 1200;
+            pos.X += 200;
             spriteBatch.Draw(this.sebbe, pos, null, Color.White, 0f, (size / 2f), scale, SpriteEffects.None, 0f);
         }
 

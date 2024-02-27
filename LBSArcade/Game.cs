@@ -39,10 +39,11 @@ namespace LBSArcade
 #endif
         }
 
-        public void RestartIntro()
-        {
-            this.intro.Restart();
-        }
+        public void RestartIntro() => this.intro.Restart();
+
+        public void PauseIntro() => this.intro.Pause();
+
+        public void StartIntro() => this.intro.Start();
 
         public void SetFullscreen(bool fullscreen, bool borderless)
         {
@@ -54,6 +55,9 @@ namespace LBSArcade
         {
             this.intro = new();
             this.ui = new();
+            
+            DLLImports.SetCursorPos(1920, 1080);
+            this.IsMouseVisible = false;
 
             base.Initialize();
         }

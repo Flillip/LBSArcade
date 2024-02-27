@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Color = Microsoft.Xna.Framework.Color;
@@ -21,6 +22,7 @@ namespace LBSArcade
         private int logoLengthMultiplier;
         private Color backgroundColor;
         private FadeTransition fadeTransition;
+        private bool paused;
        
 
         public void Load()
@@ -44,6 +46,9 @@ namespace LBSArcade
             this.fadeTransition.Restart();
         }
 
+        public void Pause() => paused = true;
+        public void Start() => paused = false;
+
         public void Update(GameTime gameTime)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -58,6 +63,7 @@ namespace LBSArcade
 
         public void UpdateTransition(GameTime gameTime)
         {
+            if (paused) return;
             this.fadeTransition.Update(gameTime);
         }
 
@@ -67,8 +73,10 @@ namespace LBSArcade
             Vector2 middle = Game.ScreenSize / 2f - new Vector2(this.logo[0].Width, this.logo[0].Height) / 2f;
             spriteBatch.Draw(this.logo[this.logoIndex % this.logo.Length], middle, Color.White);
 
-
-            this.IntroGifDone = this.logoIndex > (this.logo.Length) * this.logoLengthMultiplier;
+            if (!paused)
+                this.IntroGifDone = this.logoIndex > (this.logo.Length) * this.logoLengthMultiplier;
+            else
+                Restart();
         }
 
         public void RenderTransition(SpriteBatch spriteBatch)

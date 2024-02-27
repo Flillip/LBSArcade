@@ -30,6 +30,7 @@ namespace LBSArcade
         private static Texture2D backDropError;
         private static Vector2 backDropOffset;
         private static Vector2 textOffset;
+        private static Process currentProcess;
 
         private Texture2D texture;
         private Vector2 position;
@@ -51,7 +52,7 @@ namespace LBSArcade
             this.scale = 1f;
             this.folderName = name;
             this.corrupt = corrupt;
-            this.exeName = GamesDirectory + name + "/" + name + ".exe";
+            this.exeName = GamesDirectory + name + "/" + name;
             this.name = name;
 
 
@@ -196,14 +197,20 @@ namespace LBSArcade
             return new(this.texture, this.position, this.scale, this.corrupt);
         }
 
-        public void StartGame(out bool error)
+        public void StartGame(out bool error, string extension = ".exe")
         {
             try
             {
                 this.game = new Process();
-                this.game.StartInfo.FileName = this.exeName;
+                this.game.StartInfo.FileName = this.exeName + extension;
+                this.game.StartInfo.UseShellExecute = extension == ".lnk";
                 this.game.Start();
                 GameRunning = true;
+
+                currentProcess = Process.GetCurrentProcess();
+
+                Game.Instance.RestartIntro();
+                Game.Instance.PauseIntro();
 
                 new Thread(new ThreadStart(KeepGameOnTop)).Start();
                 error = false;
@@ -212,6 +219,16 @@ namespace LBSArcade
             catch (Exception e)
             {
                 Logger.Error(e);
+
+                if (extension == ".exe")
+                {
+                    bool lnkError = false;
+                    StartGame(out lnkError, ".lnk");
+                    error = lnkError;
+                    
+                    if (!error) return;
+                }
+
                 error = true;
             }
         }
@@ -221,6 +238,8 @@ namespace LBSArcade
             DateTime startTime = DateTime.Now;
             uint before = this.gameOpenedTime;
             DLLImports.SetWindowFocus(this.game, true);
+            DLLImports.SetCursorPos(1920, 1080);
+
 
             while (this.game.HasExited == false)
             {
@@ -236,13 +255,16 @@ namespace LBSArcade
                 //if (!DLLImports.IsWindowFocused(this.game))
                     //DLLImports.SetWindowFocus(this.game);
             }
-            Game.Instance.RestartIntro();
+            Game.Instance.StartIntro();
+            DLLImports.SetCursorPos(1920, 1080);
+            Game.Instance.IsMouseVisible = false;
 
             this.gameOpenedTime = before + this.gameOpenedTime;
             SaveTime(out bool _);
 
-            DLLImports.SetWindowFocus(Process.GetCurrentProcess());
+            DLLImports.SetWindowFocus(currentProcess);
             GameRunning = false;
+
 
 
             this.game.Dispose();
