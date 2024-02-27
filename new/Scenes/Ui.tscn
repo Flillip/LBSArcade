@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3 uid="uid://b0o0guuw3njhj"]
+
+[ext_resource type="Script" path="res://Scripts/Ui.cs" id="1_lsagl"]
+[ext_resource type="PackedScene" uid="uid://dfyy6e443jidh" path="res://Scenes/Intro.tscn" id="1_vddy7"]
+[ext_resource type="Shader" path="res://shaders/diamond_transition.gdshader" id="2_rcs70"]
+[ext_resource type="Script" path="res://Scripts/Transition.cs" id="3_l48i8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2ygif"]
+shader = ExtResource("2_rcs70")
+shader_parameter/progress = 0.0
+shader_parameter/diamondPixelSize = 100.0
+
+[node name="UI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lsagl")
+
+[node name="Intro" parent="." instance=ExtResource("1_vddy7")]
+layout_mode = 1
+
+[node name="Transition" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_2ygif")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_l48i8")
+
+[connection signal="AnimationFinished" from="Intro/ColorRect/AnimatedTextureRect" to="Transition" method="OnIntroAnimationFinished"]
+[connection signal="TransitionFinished" from="Transition" to="." method="OnTransitionFinished"]
+
+[editable path="Intro"]
