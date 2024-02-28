@@ -14,18 +14,12 @@ public partial class Ui : Control
 		Window window = GetViewport().GetWindow();
 
 		window.AlwaysOnTop = true;
-
-		GD.Print("waiting");
-		await ToSignal(GetTree().CreateTimer(1.0), "timeout");
-        GD.Print("done waiting 1s");
-
-		GD.Print("emitting");
         SignalBus.Instance.EmitSignal(SignalBus.SignalName.StartIntro);
 
 		// load stuff
-		await ToSignal(GetTree().CreateTimer(2.0), "timeout");
+		//await ToSignal(GetTree().CreateTimer(10.0), "timeout");
 
-        SignalBus.Instance.EmitSignal(SignalBus.SignalName.StopIntro);
+		SignalBus.Instance.EmitSignal(SignalBus.SignalName.StopIntro);
 
     }
 

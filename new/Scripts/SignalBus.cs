@@ -13,4 +13,5 @@ public partial class SignalBus : Node
 
     [Signal] public delegate void StartIntroEventHandler();
     [Signal] public delegate void StopIntroEventHandler();
+    [Signal] public delegate void TransitionScreenCoveredEventHandler();
 }

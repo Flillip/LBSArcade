@@ -1,8 +1,10 @@
-[gd_scene load_steps=58 format=3 uid="uid://dfyy6e443jidh"]
+[gd_scene load_steps=61 format=3 uid="uid://dfyy6e443jidh"]
 
 [ext_resource type="Script" path="res://Scripts/Intro.cs" id="1_eqr6s"]
 [ext_resource type="PackedScene" uid="uid://xypapt873doh" path="res://Scenes/Components/AnimatedTextureRect.tscn" id="1_rqv83"]
 [ext_resource type="Texture2D" uid="uid://y68eo6mtcp1q" path="res://Assets/lbs-logo.png" id="1_t6yiq"]
+[ext_resource type="Shader" path="res://shaders/diamond_transition.gdshader" id="4_t5rk3"]
+[ext_resource type="Script" path="res://Scripts/Transition.cs" id="5_fcs7v"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_31834"]
 atlas = ExtResource("1_t6yiq")
@@ -383,6 +385,11 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_newa4"]
+shader = ExtResource("4_t5rk3")
+shader_parameter/progress = 0.0
+shader_parameter/diamondPixelSize = 100.0
+
 [node name="Intro" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -392,7 +399,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_eqr6s")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="Foreground" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -401,7 +408,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.113725, 0.113725, 0.113725, 1)
 
-[node name="AnimatedTextureRect" parent="ColorRect" instance=ExtResource("1_rqv83")]
+[node name="AnimatedTextureRect" parent="Foreground" instance=ExtResource("1_rqv83")]
 custom_minimum_size = Vector2(330, 84)
 layout_mode = 1
 anchors_preset = 8
@@ -418,3 +425,16 @@ grow_vertical = 2
 SpriteFrames = SubResource("SpriteFrames_2a6ho")
 Delay = 0.04
 ShouldLoop = true
+
+[node name="Transition" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_newa4")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_fcs7v")
+Length = 4.0
+
+[connection signal="AnimationFinished" from="Foreground/AnimatedTextureRect" to="Transition" method="OnIntroAnimationFinished"]

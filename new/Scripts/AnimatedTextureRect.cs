@@ -44,7 +44,6 @@ public partial class AnimatedTextureRect : TextureRect
 			this.Texture = SpriteFrames.GetFrameTexture("default", frame);
 			if (frame == length) 
 			{
-				GD.Print("done");
 				EmitSignal(SignalName.AnimationFinished);
 				if (ShouldLoop == false) Running = false;
 			}
