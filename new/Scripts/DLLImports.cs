@@ -17,6 +17,10 @@ internal static class DLLImports
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     internal static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
 
+    [DllImport("user32.dll")]
+    public static extern IntPtr FindWindow(string className, string windowName);
+
+
     internal static void SetWindowFocus(Process process, bool retry = false, nCmdShow nCmdShow = nCmdShow.SW_SHOWMAXIMIZED)
     {
         IntPtr hWnd = process.MainWindowHandle;
@@ -49,6 +53,30 @@ internal static class DLLImports
         GetWindowThreadProcessId(activatedHandle, out int activeProcId);
 
         return activeProcId == procId;
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
+
+    [Flags()]
+    internal enum SetWindowPosFlags : uint
+    {
+        AsynchronousWindowPosition = 0x4000,
+        DeferErase = 0x2000,
+        DrawFrame = 0x0020,
+        FrameChanged = 0x0020,
+        HideWindow = 0x0080,
+        DoNotActivate = 0x0010,
+        DoNotCopyBits = 0x0100,
+        IgnoreMove = 0x0002,
+        DoNotChangeOwnerZOrder = 0x0200,
+        DoNotRedraw = 0x0008,
+        DoNotReposition = 0x0200,
+        DoNotSendChangingEvent = 0x0400,
+        IgnoreResize = 0x0001,
+        IgnoreZOrder = 0x0004,
+        ShowWindow = 0x0040,
+        NoFlag = 0x0000,
     }
 
     internal enum nCmdShow
