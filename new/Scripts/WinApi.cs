@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-internal static class DLLImports
+internal static class WinApi
 {
     [DllImport("user32.dll")]
     internal static extern IntPtr SetForegroundWindow(IntPtr hWnd);

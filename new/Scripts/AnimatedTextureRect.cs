@@ -15,8 +15,8 @@ public partial class AnimatedTextureRect : TextureRect
 
 		set {
 			_running = value;
-			if (value) tween.Play();
-			else tween.Stop();
+			if (value) tween?.Play();
+			else tween?.Stop();
 		}
 	}
 
@@ -44,11 +44,22 @@ public partial class AnimatedTextureRect : TextureRect
 			this.Texture = SpriteFrames.GetFrameTexture("default", frame);
 			if (frame == length) 
 			{
+				GD.Print("done");
 				EmitSignal(SignalName.AnimationFinished);
 				if (ShouldLoop == false) Running = false;
 			}
 		}
 
 		prevFrame = frame;
+	}
+
+	public void Start()
+	{
+		Running = true;
+	}
+
+	public void Stop()
+	{
+		Running = false;
 	}
 }

@@ -5,24 +5,34 @@ using System.Diagnostics;
 public partial class Ui : Control
 {
 	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		//ProjectSettings.SetSetting("display/window/size/always_on_top", true);
-		//ProjectSettings.Save();
-		DLLImports.SetWindowPos(Process.GetCurrentProcess().Handle, new IntPtr(-1), 0, 0, 0, 0, DLLImports.SetWindowPosFlags.IgnoreMove | DLLImports.SetWindowPosFlags.IgnoreResize);
-	}
+	internal static GlobalInputCSharp GlobalInput;
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+	public override async void _Ready()
 	{
-		Process currentProcess = Process.GetCurrentProcess();
-		if (!DLLImports.IsWindowFocused(currentProcess))
-		{;
-			DLLImports.SetWindowFocus(currentProcess);
-		}
 
-		if (Input.IsActionJustPressed("ui_left"))
-			GD.Print("pressed left");
+        GlobalInput = GetNode<GlobalInputCSharp>("/root/GlobalInput/GlobalInputCSharp");
+		Window window = GetViewport().GetWindow();
+
+		window.AlwaysOnTop = true;
+
+		GD.Print("waiting");
+		await ToSignal(GetTree().CreateTimer(1.0), "timeout");
+        GD.Print("done waiting 1s");
+
+		GD.Print("emitting");
+        SignalBus.Instance.EmitSignal(SignalBus.SignalName.StartIntro);
+
+		// load stuff
+		await ToSignal(GetTree().CreateTimer(2.0), "timeout");
+
+        SignalBus.Instance.EmitSignal(SignalBus.SignalName.StopIntro);
+
+    }
+
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
+	{
+
 	}
 
 	private void OnTransitionFinished()

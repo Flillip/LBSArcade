@@ -14,15 +14,26 @@ config/name="LBSArcade"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GlobalInput="*res://addons/global_input/autoload/global_input_gd/GlobalInputGd.tscn"
+SignalBus="*res://Scripts/SignalBus.cs"
+
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/always_on_top=true
+window/size/window_width_override=1280
+window/size/window_height_override=720
 
 [dotnet]
 
 project/assembly_name="LBSArcade"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/global_input/plugin.cfg")
 
 [file_customization]
 

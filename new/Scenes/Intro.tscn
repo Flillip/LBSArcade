@@ -1,5 +1,6 @@
-[gd_scene load_steps=57 format=3 uid="uid://dfyy6e443jidh"]
+[gd_scene load_steps=58 format=3 uid="uid://dfyy6e443jidh"]
 
+[ext_resource type="Script" path="res://Scripts/Intro.cs" id="1_eqr6s"]
 [ext_resource type="PackedScene" uid="uid://xypapt873doh" path="res://Scenes/Components/AnimatedTextureRect.tscn" id="1_rqv83"]
 [ext_resource type="Texture2D" uid="uid://y68eo6mtcp1q" path="res://Assets/lbs-logo.png" id="1_t6yiq"]
 
@@ -389,6 +390,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_eqr6s")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -415,4 +417,4 @@ grow_horizontal = 2
 grow_vertical = 2
 SpriteFrames = SubResource("SpriteFrames_2a6ho")
 Delay = 0.04
-Running = true
+ShouldLoop = true

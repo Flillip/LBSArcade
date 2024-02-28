@@ -33,6 +33,5 @@ grow_vertical = 2
 script = ExtResource("3_l48i8")
 
 [connection signal="AnimationFinished" from="Intro/ColorRect/AnimatedTextureRect" to="Transition" method="OnIntroAnimationFinished"]
-[connection signal="TransitionFinished" from="Transition" to="." method="OnTransitionFinished"]
 
 [editable path="Intro"]

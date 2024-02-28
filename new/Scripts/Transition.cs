@@ -5,11 +5,12 @@ public partial class Transition : ColorRect
 {
 	[Signal] public delegate void TransitionFinishedEventHandler();
 
-	// Called when the node enters the scene tree for the first time.
 	private bool _hasRun = false;
+	private bool _hasIntroFinnished = false;
 
 	public override void _Ready()
 	{
+		SignalBus.Instance.StopIntro += () => _hasIntroFinnished = true;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -19,7 +20,7 @@ public partial class Transition : ColorRect
 
 	private async void OnIntroAnimationFinished()
 	{
-		if (_hasRun) return;
+		if (_hasRun || _hasIntroFinnished == false) return;
 
 		GD.Print("animation");
 
